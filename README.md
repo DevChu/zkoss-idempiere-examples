@@ -1,5 +1,5 @@
 # Building the iDempiere ZK EE Components Example Plugin
-By default, iDempiere uses ZK CE as its UI framework. To leverage advanced components and features available in ZK EE, an additional ZK EE plugin is required. This document provides a step-by-step guide on how to build the `org.idempiere.zkee.comps.example` plugin from the `zkoss-idempiere-examples` repository.
+By default, iDempiere uses ZK CE as its UI framework. To leverage advanced components and features available in ZK EE, an additional ZK EE plugin is required. This document provides a step-by-step guide on how to build the `org.idempiere.zkee.comps.example` plugin from the `zkoss-idempiere-ee-plugin` repository.
 
 For general iDempiere plugin development guidelines, refer to the [iDempiere Wiki](https://wiki.idempiere.org/en/Developing_Plug-Ins_-_Get_your_Plug-In_running).
 
@@ -63,7 +63,7 @@ ${project_loc:org.idempiere.p2.targetplatform}
 
 Replace it with the full absolute path to your directory, for example:
 ```
-/Users/yourname/idempiere-plugin-dev/idempiere/org.idempiere.p2.targetplatform
+/Users/yourname/parent-folder/idempiere/org.idempiere.p2.targetplatform
 ```
 
 ### 4. Clone this Repository
@@ -71,15 +71,14 @@ Replace it with the full absolute path to your directory, for example:
 Clone this repository into the same parent folder as iDempiere Core so both directories are siblings:
 
 ```bash
-# From the parent directory (e.g., idempiere-plugin-dev)
-git clone https://github.com/anthropics/zkoss-idempiere-examples.git
+git clone https://github.com/DevChu/zkoss-idempiere-ee-plugin.git
 ```
 
 Your directory structure should look like:
 ```
-idempiere-plugin-dev/
+parent-folder/
 ├── idempiere/
-└── zkoss-idempiere-examples/
+└── zkoss-idempiere-ee-plugin/
 ```
 
 ### 5. Add a ZK PE/EE fragment
@@ -88,7 +87,7 @@ Since we want the web UI to load ZK PE/EE widgets (e.g., from zkex and zkmax), u
 
 1) Build the fragment:
 ```bash
-cd zkoss-idempiere-examples/org.idempiere.zkee.comps.fragment
+cd zkoss-idempiere-ee-plugin/org.idempiere.zkee.comps.fragment
 mvn clean -U -DskipTests -am verify
 ```
    This runs the dependency-copy step and produces `org.idempiere.zkee.comps.fragment/target/org.idempiere.zkee.comps.fragment-<version>.jar`.
@@ -114,12 +113,22 @@ ZK EE is commercially licensed. This project uses the Evaluation Repository, whi
 1) Ensure the ZK EE fragment (`org.idempiere.zkee.comps.fragment`) is installed and active in the runtime; restart the server so `org.adempiere.ui.zk` resolves with the fragment on its classpath.
 2) If your build cannot see the EE jar, add a dependency-copy step similar to the fragment (pulling the EE jar into `lib/`) or add the EE bundle to your target platform so Tycho can resolve it.
 3) In ZUL, once the fragment is active, you can directly use EE components (e.g., `<timepicker .../>`) because the lang-addon from the fragment registers them. See `org.idempiere.zkee.comps.example/src/web/form.zul` for an example using EE widgets.
-4) Build your plugin and redeploy; verify there are no “Widget class required…” errors and the EE components render.
+4) Build your plugin.
 ```bash
-cd zkoss-idempiere-examples/org.idempiere.zkee.comps.example
+cd zkoss-idempiere-ee-plugin/org.idempiere.zkee.comps.example
 mvn clean verify
 ```
 Artifacts are written to `target/`.
+
+### 7. Deploy it to iDempiere
+
+1) Startup iDempiere Runtime.
+2) In the Apache Felix Web Console (`https://localhost:8443/osgi/system/console/`), open the **Bundles** page and use **Install/Start** to deploy the plugin and fragment.
+3) Restart iDempiere Runtime to reload the fragment.
+4) In **Bundles**, confirm both bundles are **Active** (not only **Resolved**).
+5) Login via the SuperUser account.
+6) Type "ZK EE" in the left-top textbox and click "ZK EE Components Example" to open the plugin.
+7) See the timepicker component.
 
 ---
 
